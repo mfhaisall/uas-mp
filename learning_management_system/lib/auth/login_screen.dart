@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main.dart'; // Import the main app screen
+import 'help_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -125,7 +126,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HelpScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Bantuan',
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     // Handle forgot password
