@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../auth/login_screen.dart';
 
 class NotifikasiPage extends StatelessWidget {
   const NotifikasiPage({super.key});
@@ -7,19 +6,6 @@ class NotifikasiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifikasi'),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              _showLogoutDialog(context);
-            },
-          ),
-        ],
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -64,37 +50,6 @@ class NotifikasiPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Konfirmasi Logout'),
-          content: const Text('Apakah Anda yakin ingin logout?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Navigate to login page
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false,
-                );
-              },
-              child: const Text('Logout'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
