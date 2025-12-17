@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
 import 'screens/kelas_saya_page.dart';
 import 'screens/notifikasi_page.dart';
+import 'auth/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,10 +17,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Learning Management System',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const SplashScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -68,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.deepPurple,
+        selectedItemColor: Colors.red,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),

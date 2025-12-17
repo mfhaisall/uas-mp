@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/login_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -8,8 +9,16 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.red,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _showLogoutDialog(context);
+            },
+          ),
+        ],
       ),
       body: const Padding(
         padding: EdgeInsets.all(16.0),
@@ -52,6 +61,37 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navigate to login page
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

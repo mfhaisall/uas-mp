@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/login_screen.dart';
 
 class NotifikasiPage extends StatelessWidget {
   const NotifikasiPage({super.key});
@@ -8,8 +9,16 @@ class NotifikasiPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.red,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _showLogoutDialog(context);
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,6 +66,37 @@ class NotifikasiPage extends StatelessWidget {
       ),
     );
   }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navigate to login page
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class NotifikasiCard extends StatelessWidget {
@@ -80,7 +120,7 @@ class NotifikasiCard extends StatelessWidget {
           width: 12,
           height: 12,
           decoration: const BoxDecoration(
-            color: Colors.deepPurple,
+            color: Colors.red,
             shape: BoxShape.circle,
           ),
         ),

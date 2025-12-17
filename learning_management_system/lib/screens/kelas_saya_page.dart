@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/login_screen.dart';
 
 class KelasSayaPage extends StatelessWidget {
   const KelasSayaPage({super.key});
@@ -8,8 +9,16 @@ class KelasSayaPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kelas Saya'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.red,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _showLogoutDialog(context);
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,6 +66,37 @@ class KelasSayaPage extends StatelessWidget {
       ),
     );
   }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navigate to login page
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class KelasCard extends StatelessWidget {
@@ -93,7 +133,7 @@ class KelasCard extends StatelessWidget {
             LinearProgressIndicator(
               value: progress,
               backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
             ),
             const SizedBox(height: 8),
             Text('${(progress * 100).toInt()}% selesai'),
