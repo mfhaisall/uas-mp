@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart'; // Import main to access MainScreen
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -109,6 +110,61 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
+      // Add modern bottom navigation bar to profile page with red background and white icons/text
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(10),
+        height: 70,
+        decoration: BoxDecoration(
+          color: Colors.red, // Red background
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.3),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.school_outlined),
+                activeIcon: Icon(Icons.school),
+                label: 'Kelas Saya',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.notifications_none),
+                activeIcon: Icon(Icons.notifications),
+                label: 'Notifikasi',
+              ),
+            ],
+            currentIndex: 0, // Always show as if we're on the home page
+            selectedItemColor: Colors.white, // White for selected items
+            unselectedItemColor: Colors.white70, // Light white for unselected items
+            backgroundColor: Colors.transparent, // Transparent to show container background
+            elevation: 0, // Remove default elevation
+            onTap: (index) {
+              // Navigate back to main screen with selected tab
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const MainScreen()),
+                (route) => false,
+              );
+            },
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+          ),
+        ),
+      ),
     );
   }
 
@@ -152,49 +208,55 @@ class AboutMeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Informasi Pribadi',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0), // Reduced padding to prevent overflow
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Informasi Pribadi',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const _ProfileDetailItem(
+                    icon: Icons.person,
+                    label: 'Nama Lengkap',
+                    value: 'Nama Pengguna',
+                  ),
+                  const _ProfileDetailItem(
+                    icon: Icons.email,
+                    label: 'Email',
+                    value: 'user@example.com',
+                  ),
+                  const _ProfileDetailItem(
+                    icon: Icons.phone,
+                    label: 'Nomor Telepon',
+                    value: '+62 812 3456 7890',
+                  ),
+                  const _ProfileDetailItem(
+                    icon: Icons.calendar_today,
+                    label: 'Tanggal Lahir',
+                    value: '1 Januari 1990',
+                  ),
+                  const _ProfileDetailItem(
+                    icon: Icons.location_on,
+                    label: 'Alamat',
+                    value: 'Jl. Merdeka No. 123, Jakarta',
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 20),
-          const _ProfileDetailItem(
-            icon: Icons.person,
-            label: 'Nama Lengkap',
-            value: 'Nama Pengguna',
-          ),
-          const _ProfileDetailItem(
-            icon: Icons.email,
-            label: 'Email',
-            value: 'user@example.com',
-          ),
-          const _ProfileDetailItem(
-            icon: Icons.phone,
-            label: 'Nomor Telepon',
-            value: '+62 812 3456 7890',
-          ),
-          const _ProfileDetailItem(
-            icon: Icons.calendar_today,
-            label: 'Tanggal Lahir',
-            value: '1 Januari 1990',
-          ),
-          const _ProfileDetailItem(
-            icon: Icons.location_on,
-            label: 'Alamat',
-            value: 'Jl. Merdeka No. 123, Jakarta',
-          ),
-          const SizedBox(height: 30),
-          
-          
-        ],
-      ),
+        );
+      },
     );
   }
 }

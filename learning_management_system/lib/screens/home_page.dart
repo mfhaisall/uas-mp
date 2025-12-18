@@ -9,36 +9,52 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          // Custom Top Bar
+          // Modern Custom Top Bar with responsive design
           Container(
-            height: 80,
-            color: Colors.red,
+            // Use flexible height instead of fixed height to prevent overflow
+            constraints: const BoxConstraints(minHeight: 70, maxHeight: 100),
+            decoration: BoxDecoration(
+              color: Colors.red, // Keep the red color
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2), // Soft shadow for depth
+                ),
+              ],
+            ),
             child: Padding(
-              padding: const EdgeInsets.only(top: 30, left: 16, right: 16),
+              padding: const EdgeInsets.only(top: 25, left: 16, right: 16, bottom: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  // Welcome text with improved styling
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Welcome,',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
+                          color: Colors.white70, // Slightly lighter for better hierarchy
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400, // Lighter weight
                         ),
                       ),
-                      Text(
+                      const SizedBox(height: 2), // Reduced spacing
+                      const Text(
                         'Nama User',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 18, // Slightly smaller for better fit
                           fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3, // Subtle letter spacing
                         ),
                       ),
                     ],
                   ),
+                  // Profile avatar with modern styling
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -46,13 +62,25 @@ class HomePage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => const ProfilePage()),
                       );
                     },
-                    child: const CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.white,
-                      child: Icon(
+                    child: Container(
+                      width: 40, // Slightly smaller
+                      height: 40, // Slightly smaller
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12), // Slightly smaller radius
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
                         Icons.person,
                         color: Colors.red,
-                        size: 20,
+                        size: 20, // Slightly smaller icon
                       ),
                     ),
                   ),
@@ -208,14 +236,21 @@ class HomePage extends StatelessWidget {
                       className: 'Bahasa Inggris',
                       progress: 0.45,
                       teacher: 'Prof. Maria Dewi',
-                      icon: Icons.language_outlined,
+                      icon: Icons.article_outlined,
                     ),
                     const SizedBox(height: 16),
                     ProgressCard(
                       className: 'Pemrograman Dasar',
                       progress: 0.90,
                       teacher: 'Ir. Andi Prasetyo',
-                      icon: Icons.computer_outlined,
+                      icon: Icons.code_outlined,
+                    ),
+                    const SizedBox(height: 16),
+                    ProgressCard(
+                      className: 'Fisika Dasar',
+                      progress: 0.30,
+                      teacher: 'Dr. Siti Rahayu',
+                      icon: Icons.science_outlined,
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -229,6 +264,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// Task Card Widget
 class TaskCard extends StatelessWidget {
   final String title;
   final String subject;
@@ -248,7 +284,7 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -258,30 +294,45 @@ class TaskCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      icon,
-                      color: Colors.red,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        subject,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: priority == 'Tinggi' ? Colors.red : 
-                           priority == 'Sedang' ? Colors.orange : Colors.green,
+                    color: priority == 'Tinggi' ? Colors.red : Colors.orange,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -289,19 +340,28 @@ class TaskCard extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(subject),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                const Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 4),
-                Text(dueDate),
+                Text(
+                  dueDate,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
               ],
             ),
           ],
@@ -311,6 +371,7 @@ class TaskCard extends StatelessWidget {
   }
 }
 
+// Announcement Card Widget
 class AnnouncementCard extends StatelessWidget {
   final String title;
   final String content;
@@ -326,7 +387,7 @@ class AnnouncementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -335,42 +396,33 @@ class AnnouncementCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 12),
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.campaign_outlined,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-                const SizedBox(width: 12),
                 Text(
-                  title,
+                  date,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.grey,
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 12),
-            Text(content),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                date,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
             ),
           ],
         ),
@@ -379,6 +431,7 @@ class AnnouncementCard extends StatelessWidget {
   }
 }
 
+// Progress Card Widget
 class ProgressCard extends StatelessWidget {
   final String className;
   final double progress;
@@ -396,7 +449,7 @@ class ProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -407,17 +460,38 @@ class ProgressCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  icon,
-                  color: Colors.red,
-                  size: 24,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Colors.red,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  className,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        className,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        teacher,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -431,13 +505,7 @@ class ProgressCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(teacher),
-                Text('${(progress * 100).toInt()}%'),
-              ],
-            ),
+            Text('${(progress * 100).toInt()}% Completed'),
           ],
         ),
       ),
