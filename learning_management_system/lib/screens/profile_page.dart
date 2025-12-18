@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main.dart'; // Import main to access MainScreen
+import '../auth/login_screen.dart'; // Import login screen
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -165,6 +166,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
+      // Floating Logout Button - only visible when on About Me tab
+      floatingActionButton: _currentIndex == 0
+          ? Container(
+              margin: const EdgeInsets.only(bottom: 20), // Reduced bottom margin to position closer to bottom navigation
+              child: FloatingActionButton(
+                onPressed: _showLogoutDialog,
+                backgroundColor: Colors.red,
+                child: const Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -198,6 +214,37 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navigate to login page
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
