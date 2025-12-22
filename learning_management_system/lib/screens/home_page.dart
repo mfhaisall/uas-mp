@@ -1,8 +1,31 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
+import 'quiz_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // Progress tracking for each subject
+  final Map<String, double> _subjectProgress = {
+    'Matematika Dasar': 0.75,
+    'Bahasa Inggris': 0.45,
+    'Pemrograman Dasar': 0.90,
+    'Fisika Dasar': 0.30,
+  };
+
+  // Update progress for a subject
+  void _updateProgress(String subject) {
+    setState(() {
+      // Increase progress by 10%, capped at 100%
+      _subjectProgress[subject] = 
+          (_subjectProgress[subject]! + 0.1).clamp(0.0, 1.0);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,20 +202,48 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TaskCard(
-                      title: 'Tugas Matematika',
-                      subject: 'Matematika Dasar',
-                      dueDate: 'Besok, 10:00 AM',
-                      priority: 'Tinggi',
-                      icon: Icons.calculate_outlined,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizPage(
+                              subjectTitle: 'Matematika Dasar',
+                              onProgressUpdate: () => _updateProgress('Matematika Dasar'),
+                            ),
+                          ),
+                        );
+                      },
+                      child: TaskCard(
+                        title: 'Tugas Matematika',
+                        subject: 'Matematika Dasar',
+                        dueDate: 'Besok, 10:00 AM',
+                        priority: 'Tinggi',
+                        imagePath: 'assets/images/banners/cover_satu.jpg',
+                        progress: _subjectProgress['Matematika Dasar']!,
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    TaskCard(
-                      title: 'Essay Bahasa Inggris',
-                      subject: 'Bahasa Inggris',
-                      dueDate: 'Jumat, 14:00 PM',
-                      priority: 'Sedang',
-                      icon: Icons.article_outlined,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizPage(
+                              subjectTitle: 'Essay Bahasa Inggris',
+                              onProgressUpdate: () => _updateProgress('Bahasa Inggris'),
+                            ),
+                          ),
+                        );
+                      },
+                      child: TaskCard(
+                        title: 'Essay Bahasa Inggris',
+                        subject: 'Bahasa Inggris',
+                        dueDate: 'Jumat, 14:00 PM',
+                        priority: 'Sedang',
+                        imagePath: 'assets/images/banners/cover_dua.jpg',
+                        progress: _subjectProgress['Bahasa Inggris']!,
+                      ),
                     ),
                     const SizedBox(height: 32),
                     // Latest Announcements Section
@@ -225,32 +276,84 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ProgressCard(
-                      className: 'Matematika Dasar',
-                      progress: 0.75,
-                      teacher: 'Dr. Budi Santoso',
-                      icon: Icons.calculate_outlined,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizPage(
+                              subjectTitle: 'Matematika Dasar',
+                              onProgressUpdate: () => _updateProgress('Matematika Dasar'),
+                            ),
+                          ),
+                        );
+                      },
+                      child: ProgressCard(
+                        className: 'Matematika Dasar',
+                        progress: _subjectProgress['Matematika Dasar']!,
+                        teacher: 'Dr. Budi Santoso',
+                        imagePath: 'assets/images/banners/cover_tiga.jpg',
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    ProgressCard(
-                      className: 'Bahasa Inggris',
-                      progress: 0.45,
-                      teacher: 'Prof. Maria Dewi',
-                      icon: Icons.article_outlined,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizPage(
+                              subjectTitle: 'Bahasa Inggris',
+                              onProgressUpdate: () => _updateProgress('Bahasa Inggris'),
+                            ),
+                          ),
+                        );
+                      },
+                      child: ProgressCard(
+                        className: 'Bahasa Inggris',
+                        progress: _subjectProgress['Bahasa Inggris']!,
+                        teacher: 'Prof. Maria Dewi',
+                        imagePath: 'assets/images/banners/cover_empat.jpg',
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    ProgressCard(
-                      className: 'Pemrograman Dasar',
-                      progress: 0.90,
-                      teacher: 'Ir. Andi Prasetyo',
-                      icon: Icons.code_outlined,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizPage(
+                              subjectTitle: 'Pemrograman Dasar',
+                              onProgressUpdate: () => _updateProgress('Pemrograman Dasar'),
+                            ),
+                          ),
+                        );
+                      },
+                      child: ProgressCard(
+                        className: 'Pemrograman Dasar',
+                        progress: _subjectProgress['Pemrograman Dasar']!,
+                        teacher: 'Ir. Andi Prasetyo',
+                        imagePath: 'assets/images/banners/cover_satu.jpg',
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    ProgressCard(
-                      className: 'Fisika Dasar',
-                      progress: 0.30,
-                      teacher: 'Dr. Siti Rahayu',
-                      icon: Icons.science_outlined,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizPage(
+                              subjectTitle: 'Fisika Dasar',
+                              onProgressUpdate: () => _updateProgress('Fisika Dasar'),
+                            ),
+                          ),
+                        );
+                      },
+                      child: ProgressCard(
+                        className: 'Fisika Dasar',
+                        progress: _subjectProgress['Fisika Dasar']!,
+                        teacher: 'Dr. Siti Rahayu',
+                        imagePath: 'assets/images/banners/cover_dua.jpg',
+                      ),
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -270,7 +373,8 @@ class TaskCard extends StatelessWidget {
   final String subject;
   final String dueDate;
   final String priority;
-  final IconData icon;
+  final String imagePath;
+  final double progress;
 
   const TaskCard({
     super.key,
@@ -278,7 +382,8 @@ class TaskCard extends StatelessWidget {
     required this.subject,
     required this.dueDate,
     required this.priority,
-    required this.icon,
+    required this.imagePath,
+    required this.progress,
   });
 
   @override
@@ -295,19 +400,27 @@ class TaskCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                // Enlarged image moved to the left
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  width: 60, // Increased from 40 to 60
+                  height: 60, // Increased from 40 to 60
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12), // Slightly larger radius
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        spreadRadius: 1,
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.red,
-                    size: 20,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: ImageCard(imagePath: imagePath),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16), // Increased spacing
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,6 +438,24 @@ class TaskCard extends StatelessWidget {
                           fontSize: 14,
                           color: Colors.grey,
                         ),
+                      ),
+                      const SizedBox(height: 8), // Added spacing
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.access_time,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            dueDate,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -346,23 +477,22 @@ class TaskCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(
-                  Icons.access_time,
-                  size: 16,
-                  color: Colors.grey,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  dueDate,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 16), // Increased spacing
+            // Progress bar for tasks
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+              minHeight: 8, // Increased from 6 to 8
+              borderRadius: BorderRadius.circular(4), // Increased from 3 to 4
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${(progress * 100).toInt()}% Completed',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
             ),
           ],
         ),
@@ -436,14 +566,14 @@ class ProgressCard extends StatelessWidget {
   final String className;
   final double progress;
   final String teacher;
-  final IconData icon;
+  final String imagePath;
 
   const ProgressCard({
     super.key,
     required this.className,
     required this.progress,
     required this.teacher,
-    required this.icon,
+    required this.imagePath,
   });
 
   @override
@@ -460,19 +590,27 @@ class ProgressCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                // Enlarged image moved to the left
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  width: 60, // Increased from 40 to 60
+                  height: 60, // Increased from 40 to 60
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12), // Slightly larger radius
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        spreadRadius: 1,
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.red,
-                    size: 20,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: ImageCard(imagePath: imagePath),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16), // Increased spacing
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -491,22 +629,98 @@ class ProgressCard extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      // Progress bar
+                      LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.grey[300],
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                        minHeight: 8, // Increased from 8 to 10
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      const SizedBox(height: 4),
+                      Text('${(progress * 100).toInt()}% Completed'),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            const SizedBox(height: 8),
-            Text('${(progress * 100).toInt()}% Completed'),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// Dedicated Image Card Widget for Better Error Handling
+class ImageCard extends StatelessWidget {
+  final String imagePath;
+
+  const ImageCard({super.key, required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _loadImage(context),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.data != null) {
+            // Image loaded successfully
+            return snapshot.data!;
+          } else {
+            // Error loading image, show fallback
+            return _buildFallbackIcon();
+          }
+        } else {
+          // Loading state
+          return _buildLoadingIndicator();
+        }
+      },
+    );
+  }
+
+  Future<Widget?> _loadImage(BuildContext context) async {
+    try {
+      // Pre-cache the image
+      await precacheImage(AssetImage(imagePath), context);
+      
+      // If successful, return the image widget
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          // Handle image loading errors
+          return _buildFallbackIcon();
+        },
+      );
+    } catch (e) {
+      // If any error occurs, return fallback
+      return _buildFallbackIcon();
+    }
+  }
+
+  Widget _buildFallbackIcon() {
+    return Container(
+      color: Colors.red.withValues(alpha: 0.1),
+      child: const Icon(
+        Icons.book, // More relevant icon for course materials
+        color: Colors.red,
+        size: 30, // Increased icon size to match larger container
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Container(
+      color: Colors.red.withValues(alpha: 0.1),
+      child: const Center(
+        child: SizedBox(
+          width: 24, // Increased size
+          height: 24, // Increased size
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+          ),
         ),
       ),
     );
