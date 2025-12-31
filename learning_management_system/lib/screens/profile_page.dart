@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../main.dart'; // Import main to access MainScreen
 import '../auth/login_screen.dart'; // Import login screen
+import 'quiz_page.dart'; // Import quiz page
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,11 +13,22 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int _currentIndex = 0;
 
-  final List<Widget> _tabs = [
-    const AboutMeTab(),
-    const KelasTab(),
-    const EditProfilTab(),
-  ];
+  // Progress tracking for each subject (same as in home page)
+  final Map<String, double> _subjectProgress = {
+    'Matematika Dasar': 0.75,
+    'Bahasa Inggris': 0.45,
+    'Pemrograman Dasar': 0.90,
+    'Fisika Dasar': 0.30,
+  };
+
+  // Update progress for a subject
+  void _updateProgress(String subject) {
+    setState(() {
+      // Increase progress by 10%, capped at 100%
+      _subjectProgress[subject] = 
+          (_subjectProgress[subject]! + 0.1).clamp(0.0, 1.0);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +118,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             // Tab Content
             Expanded(
-              child: _tabs[_currentIndex],
+              child: IndexedStack(
+                index: _currentIndex,
+                children: [
+                  const AboutMeTab(),
+                  KelasTab(
+                    updateProgress: (String subject) => _updateProgress(subject),
+                  ),
+                  const EditProfilTab(),
+                ],
+              ),
             ),
           ],
         ),
@@ -310,12 +331,14 @@ class AboutMeTab extends StatelessWidget {
 
 // Kelas Tab Content
 class KelasTab extends StatelessWidget {
-  const KelasTab({super.key});
+  final Function(String) updateProgress;
+
+  const KelasTab({super.key, required this.updateProgress});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -326,32 +349,40 @@ class KelasTab extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Expanded(
             child: ListView(
-              children: const [
-                _KelasItem(
-                  namaKelas: 'Matematika Dasar',
-                  progress: 0.75,
-                  dosen: 'Dr. Budi Santoso',
+              children: [
+                _KelasItemWithNavigation(
+                  className: 'Matematika Dasar',
+                  teacher: 'Dr. Budi Santoso',
+                  imagePath: 'assets/images/banners/cover_tiga.jpg',
+                  subjectTitle: 'Matematika Dasar',
+                  updateProgress: updateProgress,
                 ),
-                SizedBox(height: 16),
-                _KelasItem(
-                  namaKelas: 'Bahasa Inggris',
-                  progress: 0.45,
-                  dosen: 'Prof. Maria Dewi',
+                const SizedBox(height: 16),
+                _KelasItemWithNavigation(
+                  className: 'Bahasa Inggris',
+                  teacher: 'Prof. Maria Dewi',
+                  imagePath: 'assets/images/banners/cover_empat.jpg',
+                  subjectTitle: 'Bahasa Inggris',
+                  updateProgress: updateProgress,
                 ),
-                SizedBox(height: 16),
-                _KelasItem(
-                  namaKelas: 'Pemrograman Dasar',
-                  progress: 0.90,
-                  dosen: 'Ir. Andi Prasetyo',
+                const SizedBox(height: 16),
+                _KelasItemWithNavigation(
+                  className: 'Pemrograman Dasar',
+                  teacher: 'Ir. Andi Prasetyo',
+                  imagePath: 'assets/images/banners/cover_satu.jpg',
+                  subjectTitle: 'Pemrograman Dasar',
+                  updateProgress: updateProgress,
                 ),
-                SizedBox(height: 16),
-                _KelasItem(
-                  namaKelas: 'Fisika Dasar',
-                  progress: 0.30,
-                  dosen: 'Dr. Siti Rahayu',
+                const SizedBox(height: 16),
+                _KelasItemWithNavigation(
+                  className: 'Fisika Dasar',
+                  teacher: 'Dr. Siti Rahayu',
+                  imagePath: 'assets/images/banners/cover_dua.jpg',
+                  subjectTitle: 'Fisika Dasar',
+                  updateProgress: updateProgress,
                 ),
               ],
             ),
@@ -528,15 +559,56 @@ class _ProfileDetailItem extends StatelessWidget {
   }
 }
 
+// Class item with navigation capability
+class _KelasItemWithNavigation extends StatelessWidget {
+  final String className;
+  final String teacher;
+  final String imagePath;
+  final String subjectTitle;
+  final Function(String) updateProgress;
+
+  const _KelasItemWithNavigation({
+    super.key,
+    required this.className,
+    required this.teacher,
+    required this.imagePath,
+    required this.subjectTitle,
+    required this.updateProgress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizPage(
+              subjectTitle: subjectTitle,
+              onProgressUpdate: () => updateProgress(subjectTitle),
+            ),
+          ),
+        );
+      },
+      child: _KelasItem(
+        className: className,
+        teacher: teacher,
+        imagePath: imagePath,
+      ),
+    );
+  }
+}
+
 class _KelasItem extends StatelessWidget {
-  final String namaKelas;
-  final double progress;
-  final String dosen;
+  final String className;
+  final String teacher;
+  final String imagePath;
 
   const _KelasItem({
-    required this.namaKelas,
-    required this.progress,
-    required this.dosen,
+    super.key,
+    required this.className,
+    required this.teacher,
+    required this.imagePath,
   });
 
   @override
@@ -551,32 +623,131 @@ class _KelasItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              namaKelas,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                // Enlarged image moved to the left
+                Container(
+                  width: 60, // Increased from 40 to 60
+                  height: 60, // Increased from 40 to 60
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12), // Slightly larger radius
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        spreadRadius: 1,
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: ImageCard(imagePath: imagePath),
+                  ),
+                ),
+                const SizedBox(width: 16), // Increased spacing
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        className,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        teacher,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              dosen,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-              minHeight: 6,
-              borderRadius: BorderRadius.circular(3),
-            ),
-            const SizedBox(height: 8),
-            Text('${(progress * 100).toInt()}% Selesai'),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// Dedicated Image Card Widget for Better Error Handling (same as in home page)
+class ImageCard extends StatelessWidget {
+  final String imagePath;
+
+  const ImageCard({
+    super.key,
+    required this.imagePath,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _loadImage(context),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.data != null) {
+            // Image loaded successfully
+            return snapshot.data!;
+          } else {
+            // Error loading image, show fallback
+            return _buildFallbackIcon();
+          }
+        } else {
+          // Loading state
+          return _buildLoadingIndicator();
+        }
+      },
+    );
+  }
+
+  Future<Widget?> _loadImage(BuildContext context) async {
+    try {
+      // Pre-cache the image
+      await precacheImage(AssetImage(imagePath), context);
+      
+      // If successful, return the image widget
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          // Handle image loading errors
+          return _buildFallbackIcon();
+        },
+      );
+    } catch (e) {
+      // If any error occurs, return fallback
+      return _buildFallbackIcon();
+    }
+  }
+
+  Widget _buildFallbackIcon() {
+    return Container(
+      color: Colors.red.withValues(alpha: 0.1),
+      child: const Icon(
+        Icons.book, // More relevant icon for course materials
+        color: Colors.red,
+        size: 30, // Increased icon size to match larger container
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Container(
+      color: Colors.red.withValues(alpha: 0.1),
+      child: const Center(
+        child: SizedBox(
+          width: 24, // Increased size
+          height: 24, // Increased size
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+          ),
         ),
       ),
     );

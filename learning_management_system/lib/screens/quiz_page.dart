@@ -15,10 +15,10 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  int currentQuestionIndex = 0;
-  int? selectedAnswerIndex;
-  bool isAnswered = false;
+  // Store the selected answers for each question
+  final Map<int, int?> _selectedAnswers = {};
   int score = 0;
+  int _currentQuestionIndex = 0; // Track current question index
 
   // Sample questions for different subjects (more questions now)
   Map<String, List<Map<String, dynamic>>> getQuestionsBySubject() {
@@ -386,39 +386,28 @@ class _QuizPageState extends State<QuizPage> {
     return questionsMap[widget.subjectTitle] ?? [];
   }
 
-  void selectAnswer(int answerIndex) {
-    if (isAnswered) return;
-
+  void selectAnswer(int questionIndex, int answerIndex) {
     setState(() {
-      selectedAnswerIndex = answerIndex;
-      isAnswered = true;
-
-      // Check if answer is correct
-      final questions = getCurrentQuestions();
-      if (answerIndex == questions[currentQuestionIndex]['correctAnswer']) {
-        score++;
-      }
-    });
-
-    // Move to next question after delay
-    Future.delayed(const Duration(seconds: 1), () {
-      nextQuestion();
+      _selectedAnswers[questionIndex] = answerIndex;
     });
   }
 
-  void nextQuestion() {
+  void submitQuiz() {
     final questions = getCurrentQuestions();
+    int newScore = 0;
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setState(() {
-        currentQuestionIndex++;
-        selectedAnswerIndex = null;
-        isAnswered = false;
-      });
-    } else {
-      // Quiz completed
-      showResult();
+    for (int i = 0; i < questions.length; i++) {
+      if (_selectedAnswers[i] != null && 
+          _selectedAnswers[i] == questions[i]['correctAnswer']) {
+        newScore++;
+      }
     }
+
+    setState(() {
+      score = newScore;
+    });
+
+    showResult();
   }
 
   void showResult() {
@@ -492,8 +481,6 @@ class _QuizPageState extends State<QuizPage> {
       );
     }
 
-    final currentQuestion = questions[currentQuestionIndex];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.subjectTitle),
@@ -511,11 +498,70 @@ class _QuizPageState extends State<QuizPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Question selector buttons (1-10)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (int i = 0; i < questions.length && i < 10; i++)
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _currentQuestionIndex = i;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _currentQuestionIndex == i 
+                            ? Colors.red 
+                            : _selectedAnswers[i] != null 
+                                ? Colors.green 
+                                : Colors.grey,
+                        padding: const EdgeInsets.all(8), // Smaller padding
+                        minimumSize: const Size(32, 32), // Smaller size
+                        shape: const CircleBorder(), // Circular shape
+                      ),
+                      child: Text(
+                        '${i + 1}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12, // Smaller font size
+                        ),
+                      ),
+                    ),
+                  // Add more buttons if there are more than 10 questions
+                  if (questions.length > 10)
+                    ElevatedButton(
+                      onPressed: () {
+                        // Show dialog for questions beyond 10
+                        _showRemainingQuestionsSelector(questions.length);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.all(8), // Smaller padding
+                        minimumSize: const Size(32, 32), // Smaller size
+                        shape: const CircleBorder(), // Circular shape
+                      ),
+                      child: const Text(
+                        '...',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12, // Smaller font size
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             // Progress indicator
             Row(
               children: [
                 Text(
-                  'Soal ${currentQuestionIndex + 1} dari ${questions.length}',
+                  'Soal ${_currentQuestionIndex + 1}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -523,7 +569,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
                 const Spacer(),
                 Text(
-                  'Skor: $score',
+                  'Terjawab: ${_selectedAnswers.length}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -534,95 +580,180 @@ class _QuizPageState extends State<QuizPage> {
             ),
             const SizedBox(height: 10),
             LinearProgressIndicator(
-              value: (currentQuestionIndex + 1) / questions.length,
+              value: _selectedAnswers.length / questions.length,
               backgroundColor: Colors.grey[300],
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
             ),
-            const SizedBox(height: 30),
-            // Question
-            Text(
-              currentQuestion['question'],
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Options
+            const SizedBox(height: 20),
+            // Single question (current one)
             Expanded(
-              child: ListView.builder(
-                itemCount: currentQuestion['options'].length,
-                itemBuilder: (context, index) {
-                  final isSelected = selectedAnswerIndex == index;
-                  final isCorrect = index == currentQuestion['correctAnswer'];
-                  
-                  Color? optionColor;
-                  IconData? icon;
-                  
-                  if (isAnswered) {
-                    if (isCorrect) {
-                      optionColor = Colors.green.shade100;
-                      icon = Icons.check_circle;
-                    } else if (isSelected && !isCorrect) {
-                      optionColor = Colors.red.shade100;
-                      icon = Icons.cancel;
-                    }
-                  } else {
-                    optionColor = isSelected ? Colors.red.shade50 : null;
-                  }
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: optionColor,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? Colors.red : Colors.grey.shade300,
-                        width: 1,
-                      ),
-                    ),
-                    child: ListTile(
-                      title: Text(currentQuestion['options'][index]),
-                      trailing: icon != null
-                          ? Icon(
-                              icon,
-                              color: icon == Icons.check_circle
-                                  ? Colors.green
-                                  : Colors.red,
-                            )
-                          : null,
-                      onTap: () => selectAnswer(index),
-                      enabled: !isAnswered,
-                    ),
-                  );
-                },
+              child: SingleChildScrollView(
+                child: _buildQuestionCard(_currentQuestionIndex, questions[_currentQuestionIndex]),
               ),
             ),
             const SizedBox(height: 20),
-            // Next button (only visible on last question or after answering)
-            if (isAnswered || currentQuestionIndex == questions.length - 1)
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: nextQuestion,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            // Submit button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _selectedAnswers.length == questions.length
+                    ? submitQuiz
+                    : null, // Disable until all questions are answered
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    currentQuestionIndex == questions.length - 1
-                        ? 'Lihat Hasil'
-                        : 'Soal Berikutnya',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                ),
+                child: Text(
+                  'Kumpulkan Jawaban',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
                   ),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Function to show question selection dialog for questions beyond 10
+  void _showRemainingQuestionsSelector(int totalQuestions) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pilih Nomor Soal'),
+          content: Container(
+            width: double.maxFinite,
+            height: 300,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.2,
+              ),
+              itemCount: totalQuestions,
+              itemBuilder: (BuildContext context, int index) {
+                bool isSelected = index == _currentQuestionIndex;
+                bool isAnswered = _selectedAnswers[index] != null;
+                
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _currentQuestionIndex = index;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected 
+                          ? Colors.red 
+                          : isAnswered 
+                              ? Colors.green.shade100 
+                              : Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isSelected 
+                            ? Colors.red 
+                            : isAnswered 
+                                ? Colors.green 
+                                : Colors.grey,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          color: isSelected 
+                              ? Colors.white 
+                              : isAnswered 
+                                  ? Colors.green 
+                                  : Colors.grey[700],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Batal'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildQuestionCard(int index, Map<String, dynamic> question) {
+    final isSelected = _selectedAnswers[index];
+    final isAnswered = isSelected != null;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Soal ${index + 1}: ${question['question']}',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...List.generate(
+              question['options'].length,
+              (optionIndex) {
+                final isOptionSelected = isSelected == optionIndex;
+                
+                Color? optionColor;
+
+                if (isAnswered) {
+                  // Only show selection state, no correct/incorrect feedback
+                  optionColor = isOptionSelected ? Colors.red.shade50 : null;
+                } else {
+                  optionColor = isOptionSelected ? Colors.red.shade50 : null;
+                }
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: optionColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isOptionSelected ? Colors.red : Colors.grey.shade300,
+                      width: 1,
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text(question['options'][optionIndex]),
+                    trailing: isOptionSelected
+                        ? const Icon(
+                            Icons.check_circle,
+                            color: Colors.red,
+                          )
+                        : null,
+                    onTap: () => selectAnswer(index, optionIndex),
+                    tileColor: optionColor,
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

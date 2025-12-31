@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
 import 'quiz_page.dart';
+import 'announcement_detail_page.dart';
+import 'notifikasi_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -193,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Upcoming Tasks Section
+                    // Upcoming Tasks Section with single enlarged card
                     const Text(
                       'Tugas yang Akan Datang',
                       style: TextStyle(
@@ -202,6 +204,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    // Single enlarged task card with detailed deadline
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -217,54 +220,67 @@ class _HomePageState extends State<HomePage> {
                       child: TaskCard(
                         title: 'Tugas Matematika',
                         subject: 'Matematika Dasar',
-                        dueDate: 'Besok, 10:00 AM',
+                        dueDate: 'Senin, 26 Desember 2023, 10:00 AM',
                         priority: 'Tinggi',
                         imagePath: 'assets/images/banners/cover_satu.jpg',
-                        progress: _subjectProgress['Matematika Dasar']!,
                       ),
                     ),
+                    const SizedBox(height: 32),
+                    // Latest Announcements Section with "Lihat Semua" button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Pengumuman Terakhir',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Navigate to notification page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NotifikasiPage(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                          ),
+                          child: const Text(
+                            'Lihat Semua',
+                            style: TextStyle(
+                              color: Colors.blue, // Blue text color
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 16),
+                    // Single maintenance announcement card
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => QuizPage(
-                              subjectTitle: 'Essay Bahasa Inggris',
-                              onProgressUpdate: () => _updateProgress('Bahasa Inggris'),
+                            builder: (context) => const AnnouncementDetailPage(
+                              title: 'Maintenance Sistem',
+                              content: 'Sistem akan mengalami maintenance rutin pada hari Minggu, 25 Desember 2023 pukul 00:00 - 04:00 WIB. Selama periode maintenance, beberapa layanan mungkin tidak dapat diakses. Kami mohon maaf atas ketidaknyamanannya dan berterima kasih atas pengertian Anda.',
+                              date: '1 hari yang lalu',
+                              author: 'Tim IT',
                             ),
                           ),
                         );
                       },
-                      child: TaskCard(
-                        title: 'Essay Bahasa Inggris',
-                        subject: 'Bahasa Inggris',
-                        dueDate: 'Jumat, 14:00 PM',
-                        priority: 'Sedang',
-                        imagePath: 'assets/images/banners/cover_dua.jpg',
-                        progress: _subjectProgress['Bahasa Inggris']!,
+                      child: AnnouncementCard(
+                        title: 'Maintenance Sistem',
+                        content: 'Sistem akan mengalami maintenance rutin pada akhir pekan...',
+                        date: '1 hari yang lalu',
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    // Latest Announcements Section
-                    const Text(
-                      'Pengumuman Terakhir',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    AnnouncementCard(
-                      title: 'Libur Hari Raya',
-                      content: 'Kampus akan libur selama seminggu mulai tanggal 1 Mei 2023',
-                      date: '2 hari yang lalu',
-                    ),
-                    const SizedBox(height: 16),
-                    AnnouncementCard(
-                      title: 'Jadwal Ujian Akhir',
-                      content: 'Jadwal ujian akhir semester telah diumumkan',
-                      date: '5 hari yang lalu',
                     ),
                     const SizedBox(height: 32),
                     // Class Progress Section
@@ -290,7 +306,6 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: ProgressCard(
                         className: 'Matematika Dasar',
-                        progress: _subjectProgress['Matematika Dasar']!,
                         teacher: 'Dr. Budi Santoso',
                         imagePath: 'assets/images/banners/cover_tiga.jpg',
                       ),
@@ -310,7 +325,6 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: ProgressCard(
                         className: 'Bahasa Inggris',
-                        progress: _subjectProgress['Bahasa Inggris']!,
                         teacher: 'Prof. Maria Dewi',
                         imagePath: 'assets/images/banners/cover_empat.jpg',
                       ),
@@ -330,7 +344,6 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: ProgressCard(
                         className: 'Pemrograman Dasar',
-                        progress: _subjectProgress['Pemrograman Dasar']!,
                         teacher: 'Ir. Andi Prasetyo',
                         imagePath: 'assets/images/banners/cover_satu.jpg',
                       ),
@@ -350,7 +363,6 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: ProgressCard(
                         className: 'Fisika Dasar',
-                        progress: _subjectProgress['Fisika Dasar']!,
                         teacher: 'Dr. Siti Rahayu',
                         imagePath: 'assets/images/banners/cover_dua.jpg',
                       ),
@@ -374,7 +386,6 @@ class TaskCard extends StatelessWidget {
   final String dueDate;
   final String priority;
   final String imagePath;
-  final double progress;
 
   const TaskCard({
     super.key,
@@ -383,7 +394,6 @@ class TaskCard extends StatelessWidget {
     required this.dueDate,
     required this.priority,
     required this.imagePath,
-    required this.progress,
   });
 
   @override
@@ -477,23 +487,6 @@ class TaskCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16), // Increased spacing
-            // Progress bar for tasks
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-              minHeight: 8, // Increased from 6 to 8
-              borderRadius: BorderRadius.circular(4), // Increased from 3 to 4
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${(progress * 100).toInt()}% Completed',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
           ],
         ),
       ),
@@ -564,14 +557,12 @@ class AnnouncementCard extends StatelessWidget {
 // Progress Card Widget
 class ProgressCard extends StatelessWidget {
   final String className;
-  final double progress;
   final String teacher;
   final String imagePath;
 
   const ProgressCard({
     super.key,
     required this.className,
-    required this.progress,
     required this.teacher,
     required this.imagePath,
   });
@@ -629,17 +620,6 @@ class ProgressCard extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      // Progress bar
-                      LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-                        minHeight: 8, // Increased from 8 to 10
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      const SizedBox(height: 4),
-                      Text('${(progress * 100).toInt()}% Completed'),
                     ],
                   ),
                 ),
