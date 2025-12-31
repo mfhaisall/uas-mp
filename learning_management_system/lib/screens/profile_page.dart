@@ -57,15 +57,35 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CircleAvatar(
-                          // Reduced radius for better fit
-                          radius: 25,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.person,
-                            color: Colors.red,
-                            // Reduced icon size
-                            size: 25,
+                        Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(35),
+                            child: Image.asset(
+                              'assets/images/banners/profil.jpg',
+                              fit: BoxFit.cover,
+                              width: 70,
+                              height: 70,
+                              errorBuilder: (context, error, stackTrace) {
+                                return CircleAvatar(
+                                  radius: 35,
+                                  backgroundColor: Colors.white,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.red,
+                                    size: 35,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(height: 6),
