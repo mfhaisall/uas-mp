@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'material_detail_page.dart';
+import 'full_quiz_page.dart';
+import 'task_detail_page.dart';
 
 class QuizPage extends StatefulWidget {
   final String subjectTitle;
@@ -14,11 +17,11 @@ class QuizPage extends StatefulWidget {
   State<QuizPage> createState() => _QuizPageState();
 }
 
-class _QuizPageState extends State<QuizPage> {
+class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   // Store the selected answers for each question
   final Map<int, int?> _selectedAnswers = {};
   int score = 0;
-  int _currentQuestionIndex = 0; // Track current question index
+  int _currentTabIndex = 1; // Default to Tugas dan Kuis tab (index 1)
 
   // Sample questions for different subjects (more questions now)
   Map<String, List<Map<String, dynamic>>> getQuestionsBySubject() {
@@ -481,6 +484,9 @@ class _QuizPageState extends State<QuizPage> {
       );
     }
 
+    // Initialize the TabController
+    TabController tabController = TabController(length: 2, vsync: this, initialIndex: _currentTabIndex);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.subjectTitle),
@@ -493,270 +499,256 @@ class _QuizPageState extends State<QuizPage> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Question selector buttons (1-10)
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (int i = 0; i < questions.length && i < 10; i++)
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _currentQuestionIndex = i;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _currentQuestionIndex == i 
-                            ? Colors.red 
-                            : _selectedAnswers[i] != null 
-                                ? Colors.green 
-                                : Colors.grey,
-                        padding: const EdgeInsets.all(8), // Smaller padding
-                        minimumSize: const Size(32, 32), // Smaller size
-                        shape: const CircleBorder(), // Circular shape
-                      ),
-                      child: Text(
-                        '${i + 1}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12, // Smaller font size
-                        ),
-                      ),
-                    ),
-                  // Add more buttons if there are more than 10 questions
-                  if (questions.length > 10)
-                    ElevatedButton(
-                      onPressed: () {
-                        // Show dialog for questions beyond 10
-                        _showRemainingQuestionsSelector(questions.length);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.all(8), // Smaller padding
-                        minimumSize: const Size(32, 32), // Smaller size
-                        shape: const CircleBorder(), // Circular shape
-                      ),
-                      child: const Text(
-                        '...',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12, // Smaller font size
-                        ),
-                      ),
-                    ),
-                ],
+      body: Column(
+        children: [
+          // Wizard Navigation (Tabs) - Materi, Tugas dan Kuis
+          Container(
+            height: 50,
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.grey, width: 0.5),
               ),
             ),
-            // Progress indicator
-            Row(
-              children: [
-                Text(
-                  'Soal ${_currentQuestionIndex + 1}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+            child: TabBar(
+              controller: tabController,
+              onTap: (index) {
+                setState(() {
+                  _currentTabIndex = index;
+                });
+              },
+              tabs: const [
+                Tab(text: 'Materi'),
+                Tab(text: 'Tugas dan Kuis'),
+              ],
+              labelColor: Colors.red,
+              unselectedLabelColor: Colors.grey,
+              indicator: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.red,
+                    width: 3,
                   ),
                 ),
-                const Spacer(),
-                Text(
-                  'Terjawab: ${_selectedAnswers.length}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+              ),
+            ),
+          ),
+          // Main Content
+          Expanded(
+            child: TabBarView(
+              controller: tabController,
+              children: [
+                // Materi Tab
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Materi',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: 8, // 8 meetings
+                          itemBuilder: (context, index) {
+                            // Define specific programming titles for each meeting
+                            List<String> programmingTitles = [
+                              'Pengenalan Pemrograman',
+                              'Struktur Data Dasar',
+                              'Fungsi dan Prosedur',
+                              'Pengulangan dan Perulangan',
+                              'Array dan Matriks',
+                              'Konsep Object-Oriented Programming',
+                              'Pengenalan Algoritma',
+                              'Debugging dan Testing'
+                            ];
+                            
+                            String title = (index < programmingTitles.length) 
+                                ? programmingTitles[index] 
+                                : 'Materi Pertemuan ${index + 1}';
+                            
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'Pertemuan ${index + 1}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    const Icon(
+                                      Icons.book,
+                                      size: 40,
+                                      color: Colors.red,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Text(
+                                        title,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.arrow_forward_ios, size: 16),
+                                      onPressed: () {
+                                        // Navigate to material detail page
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => MaterialDetailPage(
+                                              meetingNumber: index + 1,
+                                              meetingTitle: title,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Tugas dan Kuis Tab
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Pilih aktivitas:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.assignment,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          title: const Text(
+                            'Tugas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: const Text('Kerjakan tugas yang diberikan'),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TaskDetailPage(
+                                  subjectTitle: widget.subjectTitle,
+                                  taskTitle: 'Tugas ${widget.subjectTitle}',
+                                  taskDescription: 'Ini adalah tugas untuk mata pelajaran ${widget.subjectTitle}. Kerjakan dengan teliti dan kumpulkan sebelum batas waktu.',
+                                  dueDate: '14 Januari 2025',
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.quiz,
+                              color: Colors.green,
+                            ),
+                          ),
+                          title: const Text(
+                            'Kuis',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: const Text('Kerjakan kuis untuk menguji pemahaman'),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullQuizPage(
+                                  subjectTitle: widget.subjectTitle,
+                                  onProgressUpdate: widget.onProgressUpdate,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: _selectedAnswers.length / questions.length,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-            ),
-            const SizedBox(height: 20),
-            // Single question (current one)
-            Expanded(
-              child: SingleChildScrollView(
-                child: _buildQuestionCard(_currentQuestionIndex, questions[_currentQuestionIndex]),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Submit button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _selectedAnswers.length == questions.length
-                    ? submitQuiz
-                    : null, // Disable until all questions are answered
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  'Kumpulkan Jawaban',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Function to show question selection dialog for questions beyond 10
-  void _showRemainingQuestionsSelector(int totalQuestions) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Pilih Nomor Soal'),
-          content: Container(
-            width: double.maxFinite,
-            height: 300,
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 1.2,
-              ),
-              itemCount: totalQuestions,
-              itemBuilder: (BuildContext context, int index) {
-                bool isSelected = index == _currentQuestionIndex;
-                bool isAnswered = _selectedAnswers[index] != null;
-                
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _currentQuestionIndex = index;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isSelected 
-                          ? Colors.red 
-                          : isAnswered 
-                              ? Colors.green.shade100 
-                              : Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isSelected 
-                            ? Colors.red 
-                            : isAnswered 
-                                ? Colors.green 
-                                : Colors.grey,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${index + 1}',
-                        style: TextStyle(
-                          color: isSelected 
-                              ? Colors.white 
-                              : isAnswered 
-                                  ? Colors.green 
-                                  : Colors.grey[700],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Batal'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildQuestionCard(int index, Map<String, dynamic> question) {
-    final isSelected = _selectedAnswers[index];
-    final isAnswered = isSelected != null;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Soal ${index + 1}: ${question['question']}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...List.generate(
-              question['options'].length,
-              (optionIndex) {
-                final isOptionSelected = isSelected == optionIndex;
-                
-                Color? optionColor;
-
-                if (isAnswered) {
-                  // Only show selection state, no correct/incorrect feedback
-                  optionColor = isOptionSelected ? Colors.red.shade50 : null;
-                } else {
-                  optionColor = isOptionSelected ? Colors.red.shade50 : null;
-                }
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  decoration: BoxDecoration(
-                    color: optionColor,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isOptionSelected ? Colors.red : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                  ),
-                  child: ListTile(
-                    title: Text(question['options'][optionIndex]),
-                    trailing: isOptionSelected
-                        ? const Icon(
-                            Icons.check_circle,
-                            color: Colors.red,
-                          )
-                        : null,
-                    onTap: () => selectAnswer(index, optionIndex),
-                    tileColor: optionColor,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
+
 }
